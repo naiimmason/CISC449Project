@@ -191,18 +191,29 @@ int transfer_from_to(char* sender_name, long sender_account_number, char* receiv
 
 // Returns the global variable counting the total number of accounts or the size
 // of the linked list
+/*@ requires \true;
+  @ assigns \nothing;
+  @*/
 long total_accounts(){
     return records;
 }
 
 // Returns the global variable keeping track of the total balance of all the accounts
+/*@ requires \true;
+  @ assigns \nothing;
+  @*/
 double total_balance(){
     return account_balances;
 }
 
-// Still working on this
-void add_interest(long _account_number, double interest, int time, int period){
-    
+//Given an interest rate and an amount of time, updates the account balance to reflect the new rate over time
+//Interest is calculated yearly (ie. 5% yearly for 1 year) 
+void add_interest(long _account_number, double interest, int time){
+  for(int i=0; i<records; i++){
+    if(accounts[i]->account_number == _account_number){
+      accounts[i]->balance = (accounts[i]->balance) * (1+interest*time);
+    }
+  }
 }
 
 int main(int argc, const char * argv[]) {
