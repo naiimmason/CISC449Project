@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#define num_accounts 25
-
 // A data structure to dynamically and in O(1) time manage unique 7 digit account numbers with efficient recovery from deleted accounts
 // Based on a linked list implementation
 struct AccountNumber {
@@ -30,30 +28,25 @@ struct AccountNumber *root_account_number;
 struct AccountNumber *open_account_number;
 
 /*@ requires \true;
-  @ ensures \valid(\result);
+  @ ensures \valid(result);
   @ ensures \result->account_number >= 1000000;
   @ ensures \result->active == 0;
-  @ ensures \valid(\result->prev_account_number);
-  @ ensures \valid(\result->next_account_number);
+  @ ensures \valid(result->prev_account_number);
+  @ ensures \valid(result->next_account_number);
   @*/
-AccountRecord start_system(){
-  //accounts = malloc(sizeof(*accounts)*record_space);
-  //root_account_number = malloc(sizeof(struct AccountNumber*));
-
-  accounts = AccountRecord[num_accounts][record_space];
-  root_account_number = AccountNumber[num_accounts];
+void start_system(){
+    accounts[numAccounts][]
+    root_account_number = malloc(sizeof(struct AccountNumber*));
     root_account_number->account_number = 1000000;
     root_account_number->active = 0;
     root_account_number->prev_account_number = NULL;
     root_account_number->next_account_number = NULL;
     open_account_number = root_account_number;
-
-    return accounts;
 }
 
 // Engine for the AccountNumber struct which manages the creation, deletion, and assignment of unique
 // account numbers used to access each account owner's account information
-/*@ requires \true;
+/*@ requires \true
   @ ensures \result > 0;
   @ ensures \result == open_account_number->account_number;
   @*/
@@ -81,11 +74,12 @@ long assign_account_number(){
 }
 
 // Inactivates an account number from a closed account, and waits to assign it to a newly opened account
-/*@ requires _account_number > 0;
+/*@ \requires _account_number > 0;
   @*/
 void remove_account_number(long _account_number){
     struct AccountNumber* current = root_account_number;
-    //todo loop invariant
+    /*@ loop invariant 
+      @*/
     while(current != NULL){
         if(current->account_number == _account_number){
             current->active = 0;
@@ -93,7 +87,7 @@ void remove_account_number(long _account_number){
             break;
         }
         current = current->next_account_number;
-	//assert account number??
+	//@ assert \pre(current->account_number) != \Here(current->account_number);
     }
 }
 

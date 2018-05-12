@@ -30,18 +30,17 @@ struct AccountNumber *root_account_number;
 struct AccountNumber *open_account_number;
 
 /*@ requires \true;
-  @ ensures \valid(\result);
+  @ ensures \valid(result);
   @ ensures \result->account_number >= 1000000;
   @ ensures \result->active == 0;
-  @ ensures \valid(\result->prev_account_number);
-  @ ensures \valid(\result->next_account_number);
+  @ ensures \valid(result->prev_account_number);
+  @ ensures \valid(result->next_account_number);
   @*/
 AccountRecord start_system(){
-  //accounts = malloc(sizeof(*accounts)*record_space);
-  //root_account_number = malloc(sizeof(struct AccountNumber*));
-
   accounts = AccountRecord[num_accounts][record_space];
   root_account_number = AccountNumber[num_accounts];
+  // malloc(sizeof(*accounts)*record_space);
+  // root_account_number = malloc(sizeof(struct AccountNumber*));
     root_account_number->account_number = 1000000;
     root_account_number->active = 0;
     root_account_number->prev_account_number = NULL;
@@ -81,11 +80,12 @@ long assign_account_number(){
 }
 
 // Inactivates an account number from a closed account, and waits to assign it to a newly opened account
-/*@ requires _account_number > 0;
+/*@ \requires _account_number > 0;
   @*/
 void remove_account_number(long _account_number){
     struct AccountNumber* current = root_account_number;
-    //todo loop invariant
+    /*@ loop invariant 
+      @*/
     while(current != NULL){
         if(current->account_number == _account_number){
             current->active = 0;
@@ -93,7 +93,7 @@ void remove_account_number(long _account_number){
             break;
         }
         current = current->next_account_number;
-	//assert account number??
+	//@ assert \pre(current->account_number) != \Here(current->account_number);
     }
 }
 
