@@ -1,0 +1,192 @@
+Script started on Sun 13 May 2018 10:14:49 AM EDT
+]0;user@fc-light: ~/CISC449Projectuser@fc-light:~/CISC449Project$ exitmake[2Plsmake
+frama-c -wp -cpp-command 'gcc -C -E -I../Logic -I.' -cpp-frama-c-compliant -wp-skip-fct main -wp-rte -kernel-msg-key pp BMS_Main_Arrays2.c
+[kernel:pp] preprocessing with "gcc -C -E -I../Logic -I.  -I/home/user/.opam/4.04.2/share/frama-c/libc -D__FRAMAC__ -D__FC_MACHDEP_X86_32 -dD -nostdinc -m32 BMS_Main_Arrays2.c"
+[kernel] Parsing BMS_Main_Arrays2.c (with preprocessing)
+BMS_Main_Arrays2.c:276:[kernel] warning: Calling undeclared function start_system. Old style K&R code?
+Running WP plugin...[KLoading driver 'FRAMAC_SHARE/wp/wp.driver'[KCollecting axiomatic usage[KBMS_Main_Arrays2.c:275:[wp] warning: Ignored 'terminates' specification:
+     \false
+[rte] annotating function add_interest
+[rte] annotating function assign_account_number
+[rte] annotating function close_account
+[rte] annotating function deposit
+[rte] annotating function expand_accounts
+[rte] annotating function find_account_number
+[rte] annotating function incr_numbers
+[rte] annotating function incr_records
+[rte] annotating function open_account
+[rte] annotating function push_back
+[rte] annotating function remove_account_number
+BMS_Main_Arrays2.c:275:[kernel] warning: Neither code nor specification for function start_system, generating default assigns from the prototype
+[rte] annotating function total_accounts
+[rte] annotating function total_balance
+[rte] annotating function transfer_from_to
+[rte] annotating function withdrawal
+Collecting variable usage[KFRAMAC_SHARE/libc/stdlib.h:320:[wp] warning: Allocation, initialization and danglingness not yet implemented
+    (\fresh{Old, Here}(\at(\result,wp:post),\at(size,wp:pre)))
+BMS_Main_Arrays2.c:74:[wp] warning: Cast with incompatible pointers types (source: sint8*)
+       (target: AccountNumber*)
+BMS_Main_Arrays2.c:156:[wp] warning: Cast with incompatible pointers types (source: AccountRecord*)
+       (target: sint8*)
+FRAMAC_SHARE/libc/stdlib.h:335:[wp] warning: Allocation, initialization and danglingness not yet implemented
+    (freeable: \freeable(p))
+FRAMAC_SHARE/libc/stdlib.h:337:[wp] warning: Allocation, initialization and danglingness not yet implemented
+    (\allocable(\at(p,wp:pre)))
+BMS_Main_Arrays2.c:116:[wp] warning: Cast with incompatible pointers types (source: (struct AccountRecord)**)
+       (target: sint8*)
+BMS_Main_Arrays2.c:113:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+BMS_Main_Arrays2.c:111:[wp] warning: Cast with incompatible pointers types (source: sint8*)
+       (target: (struct AccountRecord)**)
+BMS_Main_Arrays2.c:171:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+BMS_Main_Arrays2.c:44:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+BMS_Main_Arrays2.c:122:[wp] warning: Cast with incompatible pointers types (source: sint8*)
+       (target: AccountRecord*)
+BMS_Main_Arrays2.c:137:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+Computing [100 goals...][K[wp] 101 goals scheduled
+[00%] add_interest_loop_inv_preserved[K[01%] add_interest_loop_inv_established[K[02%] add_interest_assert_rte_mem_access[K[03%] add_interest_assert_rte_mem_access_2[K[04%] add_interest_assert_rte_mem_access_3[K[wp] [Alt-Ergo] Goal typed_add_interest_loop_inv_established : Unknown (Qed:63ms) (1.2s)
+[05%] add_interest_assert_rte_mem_access_4[K[06%] add_interest_assert_rte_mem_access_5[K[07%] add_interest_assert_rte_mem_access_6[K[wp] [Alt-Ergo] Goal typed_add_interest_assert_rte_mem_access : Unknown (Qed:23ms) (1.4s)
+[08%] add_interest_assert_rte_signed_overflow[K[09%] add_interest_loop_assign_part1[K[wp] [Alt-Ergo] Goal typed_add_interest_assert_rte_mem_access_2 : Unknown (Qed:35ms) (2s)
+[10%] add_interest_loop_assign_part2[K[wp] [Alt-Ergo] Goal typed_add_interest_assert_rte_mem_access_3 : Unknown (Qed:32ms) (2.5s)
+[11%] add_interest_loop_assign_part3[K[wp] [Alt-Ergo] Goal typed_add_interest_assert_rte_mem_access_6 : Unknown (Qed:34ms) (2.4s)
+[12%] add_interest_loop_term_decrease[K[13%] add_interest_loop_term_positive[K[14%] assign_account_number_post[K[15%] assign_account_number_post_2[K[16%] assign_account_number_assert_rte_mem_access[K[wp] [Alt-Ergo] Goal typed_assign_account_number_assert_rte_mem_access : Unknown (Qed:6ms) (506ms)
+[17%] assign_account_number_assert_rte_mem_access_2[K[wp] [Alt-Ergo] Goal typed_add_interest_loop_assign_part2 : Unknown (Qed:47ms) (3.2s)
+[18%] assign_account_number_loop_inv_preserved[K[19%] assign_account_number_loop_inv_established[K[wp] [Alt-Ergo] Goal typed_add_interest_loop_assign_part3 : Unknown (Qed:51ms) (2.7s)
+[20%] assign_account_number_assert_rte_mem_access_3[K[wp] [Alt-Ergo] Goal typed_assign_account_number_assert_rte_mem_access_2 : Unknown (Qed:22ms) (645ms)
+[21%] assign_account_number_assert_rte_mem_access_4[K[wp] [Alt-Ergo] Goal typed_add_interest_loop_assign_part1 : Unknown (Qed:53ms) (4.1s)
+[22%] assign_account_number_assert_rte_mem_access_5[K[23%] assign_account_number_loop_assign_part1[K[24%] assign_account_number_loop_assign_part2[K[25%] assign_account_number_loop_assign_part3[K[26%] close_account_loop_inv_preserved[K[27%] close_account_loop_inv_established[K[wp] [Alt-Ergo] Goal typed_assign_account_number_assert_rte_mem_access_4 : Unknown (Qed:46ms) (489ms)
+[28%] close_account_assert_rte_mem_access[K[29%] close_account_assert_rte_mem_access_2[K[30%] close_account_assert_rte_mem_access_3[K[31%] close_account_assert_rte_mem_access_4[K[32%] close_account_assert_rte_mem_access_5[K[33%] close_account_assert_rte_mem_access_6[K[34%] close_account_assert_rte_mem_access_7[K[35%] close_account_assert_rte_signed_overflow[K[wp] [Alt-Ergo] Goal typed_close_account_loop_inv_established : Unknown (Qed:21ms) (435ms)
+[wp] [Alt-Ergo] Goal typed_assign_account_number_loop_assign_part3 : Unknown (Qed:29ms) (617ms)
+[wp] [Alt-Ergo] Goal typed_assign_account_number_loop_assign_part2 : Unknown (Qed:31ms) (615ms) (Degenerated, 2 warnings)
+[36%] close_account_assert_rte_signed_overflow_2[K[37%] close_account_assert_rte_mem_access_8[K[38%] close_account_assert_rte_signed_overflow_3[K[39%] close_account_loop_assign_part1[K[40%] close_account_loop_assign_part2[K[41%] close_account_call_remove_account_number_pre[K[42%] close_account_call_free_deallocation_pre_freeable[K[43%] deposit_post[K[44%] deposit_loop_inv_preserved[K[45%] deposit_loop_inv_established[K[46%] deposit_assert_rte_mem_access[K[47%] deposit_assert_rte_mem_access_2[K[48%] deposit_assert_rte_mem_access_3[K[49%] deposit_assert_rte_mem_access_4[K[wp] [Alt-Ergo] Goal typed_deposit_loop_inv_established : Unknown (Qed:18ms) (1.3s)
+[50%] deposit_assert_rte_mem_access_5[K[wp] [Alt-Ergo] Goal typed_deposit_assert_rte_mem_access : Unknown (Qed:35ms) (1.7s)
+[51%] deposit_assert_rte_mem_access_6[K[52%] deposit_assert_rte_mem_access_7[K[wp] [Alt-Ergo] Goal typed_deposit_assert_rte_mem_access_2 : Unknown (Qed:44ms) (2.3s)
+[53%] deposit_assert_rte_signed_overflow[K[54%] deposit_loop_assign_part1[K[wp] [Alt-Ergo] Goal typed_deposit_assert_rte_mem_access_4 : Unknown (Qed:51ms) (2.7s)
+[55%] deposit_loop_assign_part2[K[56%] expand_accounts_assert_rte_signed_overflow[K[wp] [Alt-Ergo] Goal typed_expand_accounts_assert_rte_signed_overflow : Unknown (Qed:8ms) (363ms)
+[57%] expand_accounts_assert_rte_signed_overflow_2[K[wp] [Alt-Ergo] Goal typed_expand_accounts_assert_rte_signed_overflow_2 : Unknown (Qed:4ms) (355ms)
+[58%] expand_accounts_assert_rte_signed_overflow_3[K[wp] [Alt-Ergo] Goal typed_deposit_assert_rte_mem_access_5 : Unknown (Qed:59ms) (3.1s)
+[59%] find_account_number_assert_rte_mem_access[K[wp] [Alt-Ergo] Goal typed_expand_accounts_assert_rte_signed_overflow_3 : Unknown (Qed:4ms) (334ms)
+[60%] find_account_number_assert_rte_mem_access_2[K[wp] [Alt-Ergo] Goal typed_find_account_number_assert_rte_mem_access : Unknown (Qed:28ms) (569ms)
+[61%] find_account_number_assert_rte_mem_access_3[K[62%] find_account_number_assert_rte_mem_access_4[K[wp] [Alt-Ergo] Goal typed_find_account_number_assert_rte_mem_access_2 : Unknown (Qed:37ms) (604ms)
+[63%] find_account_number_assert_rte_signed_overflow[K[wp] [Alt-Ergo] Goal typed_deposit_loop_assign_part2 : Unknown (Qed:109ms) (3.0s)
+[64%] incr_numbers_assert_rte_mem_access[K[65%] incr_numbers_assert_rte_mem_access_2[K[wp] [Alt-Ergo] Goal typed_deposit_loop_assign_part1 : Unknown (Qed:78ms) (4.5s)
+[66%] incr_numbers_assign[K[wp] [Alt-Ergo] Goal typed_find_account_number_assert_rte_mem_access_4 : Unknown (Qed:34ms) (1.3s)
+[67%] push_back_assert_rte_mem_access[K[wp] [Alt-Ergo] Goal typed_push_back_assert_rte_mem_access : Unknown (Qed:31ms) (607ms)
+[68%] push_back_assert_rte_mem_access_2[K[wp] [Alt-Ergo] Goal typed_push_back_assert_rte_mem_access_2 : Unknown (Qed:23ms) (557ms)
+[69%] push_back_assert_rte_signed_overflow[K[wp] [Alt-Ergo] Goal typed_push_back_assert_rte_signed_overflow : Unknown (Qed:23ms) (406ms)
+[70%] push_back_assert_rte_signed_overflow_2[K[71%] remove_account_number_assert_rte_mem_access[K[wp] [Alt-Ergo] Goal typed_remove_account_number_assert_rte_mem_access : Unknown (Qed:29ms) (557ms)
+[72%] remove_account_number_assert_rte_mem_access_2[K[wp] [Alt-Ergo] Goal typed_remove_account_number_assert_rte_mem_access_2 : Unknown (Qed:31ms) (758ms)
+[73%] remove_account_number_assert_rte_mem_access_3[K[wp] [Alt-Ergo] Goal typed_remove_account_number_assert_rte_mem_access_3 : Unknown (Qed:36ms) (1s)
+[74%] remove_account_number_loop_assign_part1[K[75%] remove_account_number_loop_assign_part2[K[wp] [Alt-Ergo] Goal typed_remove_account_number_loop_assign_part2 : Unknown (Qed:45ms) (1.7s)
+[76%] total_accounts_post[K[wp] [Alt-Ergo] Goal typed_incr_numbers_assert_rte_mem_access : Timeout (Qed:24ms) (10s)
+[77%] total_accounts_assign[K[78%] total_balance_post[K[wp] [Alt-Ergo] Goal typed_total_accounts_post : Unknown (Qed:4ms) (359ms)
+[79%] total_balance_assign[K[80%] transfer_from_to_call_deposit_pre[K[wp] [Alt-Ergo] Goal typed_incr_numbers_assert_rte_mem_access_2 : Timeout (Qed:21ms) (10s)
+[81%] transfer_from_to_call_deposit_pre_2[K[wp] [Alt-Ergo] Goal typed_transfer_from_to_call_deposit_pre : Unknown (Qed:26ms) (461ms)
+[82%] transfer_from_to_call_deposit_pre_3[K[wp] [Alt-Ergo] Goal typed_incr_numbers_assign : Timeout (Qed:31ms) (10s)
+[83%] transfer_from_to_call_deposit_pre_4[K[wp] [Alt-Ergo] Goal typed_transfer_from_to_call_deposit_pre_2 : Unknown (Qed:23ms) (418ms)
+[wp] [Alt-Ergo] Goal typed_total_balance_post : Unknown (Qed:7ms) (924ms)
+[84%] transfer_from_to_call_deposit_pre_2_2[K[85%] transfer_from_to_call_deposit_pre_3_2[K[86%] withdrawal_loop_inv_preserved[K[wp] [Alt-Ergo] Goal typed_transfer_from_to_call_deposit_pre_3 : Unknown (Qed:20ms) (1s)
+[87%] withdrawal_loop_inv_established[K[88%] withdrawal_assert_rte_mem_access[K[wp] [Alt-Ergo] Goal typed_transfer_from_to_call_deposit_pre_4 : Unknown (Qed:26ms) (1.4s)
+[89%] withdrawal_assert_rte_mem_access_2[K[wp] [Alt-Ergo] Goal typed_transfer_from_to_call_deposit_pre_2_2 : Unknown (Qed:35ms) (1s)
+[90%] withdrawal_assert_rte_mem_access_3[K[91%] withdrawal_assert_rte_mem_access_4[K[wp] [Alt-Ergo] Goal typed_withdrawal_assert_rte_mem_access : Unknown (Qed:38ms) (344ms)
+[wp] [Alt-Ergo] Goal typed_withdrawal_loop_inv_established : Unknown (Qed:44ms) (343ms)
+[92%] withdrawal_assert_rte_mem_access_5[K[93%] withdrawal_assert_rte_mem_access_6[K[94%] withdrawal_assert_rte_mem_access_7[K[wp] [Alt-Ergo] Goal typed_withdrawal_assert_rte_mem_access_2 : Unknown (Qed:57ms) (424ms)
+[95%] withdrawal_assert_rte_mem_access_8[K[96%] withdrawal_assert_rte_mem_access_9[K[97%] withdrawal_assert_rte_signed_overflow[K[wp] [Alt-Ergo] Goal typed_withdrawal_assert_rte_mem_access_4 : Unknown (Qed:50ms) (905ms)
+[98%] withdrawal_loop_assign[K[99%] withdrawal_loop_term_decrease[K[100%] withdrawal_loop_term_positive[K[wp] Waiting provers...[K[wp] [Alt-Ergo] Goal typed_withdrawal_assert_rte_mem_access_7 : Unknown (Qed:68ms) (1.6s)
+[wp] Proved goals:   52 / 101
+    Qed:            44  (2ms-17ms-99ms)
+    Alt-Ergo:        8  (32ms-76ms-167ms) (123) (interrupted: 3) (unknown: 46)
+]0;user@fc-light: ~/CISC449Projectuser@fc-light:~/CISC449Project$ make
+frama-c -wp -cpp-command 'gcc -C -E -I../Logic -I.' -cpp-frama-c-compliant -wp-skip-fct main -wp-rte -kernel-msg-key pp BMS_Main_Arrays2.c
+[kernel:pp] preprocessing with "gcc -C -E -I../Logic -I.  -I/home/user/.opam/4.04.2/share/frama-c/libc -D__FRAMAC__ -D__FC_MACHDEP_X86_32 -dD -nostdinc -m32 BMS_Main_Arrays2.c"
+[kernel] Parsing BMS_Main_Arrays2.c (with preprocessing)
+BMS_Main_Arrays2.c:280:[kernel] warning: Calling undeclared function start_system. Old style K&R code?
+Running WP plugin...[KLoading driver 'FRAMAC_SHARE/wp/wp.driver'[KCollecting axiomatic usage[KBMS_Main_Arrays2.c:279:[wp] warning: Ignored 'terminates' specification:
+     \false
+[rte] annotating function add_interest
+[rte] annotating function assign_account_number
+[rte] annotating function close_account
+[rte] annotating function deposit
+[rte] annotating function expand_accounts
+[rte] annotating function find_account_number
+[rte] annotating function incr_numbers
+[rte] annotating function incr_records
+[rte] annotating function open_account
+[rte] annotating function push_back
+[rte] annotating function remove_account_number
+BMS_Main_Arrays2.c:279:[kernel] warning: Neither code nor specification for function start_system, generating default assigns from the prototype
+[rte] annotating function total_accounts
+[rte] annotating function total_balance
+[rte] annotating function transfer_from_to
+[rte] annotating function withdrawal
+Collecting variable usage[KFRAMAC_SHARE/libc/stdlib.h:320:[wp] warning: Allocation, initialization and danglingness not yet implemented
+    (\fresh{Old, Here}(\at(\result,wp:post),\at(size,wp:pre)))
+BMS_Main_Arrays2.c:74:[wp] warning: Cast with incompatible pointers types (source: sint8*)
+       (target: AccountNumber*)
+BMS_Main_Arrays2.c:160:[wp] warning: Cast with incompatible pointers types (source: AccountRecord*)
+       (target: sint8*)
+FRAMAC_SHARE/libc/stdlib.h:335:[wp] warning: Allocation, initialization and danglingness not yet implemented
+    (freeable: \freeable(p))
+FRAMAC_SHARE/libc/stdlib.h:337:[wp] warning: Allocation, initialization and danglingness not yet implemented
+    (\allocable(\at(p,wp:pre)))
+BMS_Main_Arrays2.c:120:[wp] warning: Cast with incompatible pointers types (source: (struct AccountRecord)**)
+       (target: sint8*)
+BMS_Main_Arrays2.c:112:[wp] warning: Cast with incompatible pointers types (source: sint8*)
+       (target: (struct AccountRecord)**)
+BMS_Main_Arrays2.c:175:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+BMS_Main_Arrays2.c:44:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+BMS_Main_Arrays2.c:126:[wp] warning: Cast with incompatible pointers types (source: sint8*)
+       (target: AccountRecord*)
+BMS_Main_Arrays2.c:141:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+Computing [100 goals...][K[wp] 105 goals scheduled
+[00%] add_interest_loop_inv_preserved[K[01%] add_interest_loop_inv_established[K[02%] add_interest_assert_rte_mem_access[K[03%] add_interest_assert_rte_mem_access_2[K[04%] add_interest_assert_rte_mem_access_3[K[wp] [Alt-Ergo] Goal typed_add_interest_loop_inv_established : Unknown (Qed:37ms) (1.2s)
+[05%] add_interest_assert_rte_mem_access_4[K[06%] add_interest_assert_rte_mem_access_5[K[07%] add_interest_assert_rte_mem_access_6[K[wp] [Alt-Ergo] Goal typed_add_interest_assert_rte_mem_access : Unknown (Qed:51ms) (1.5s)
+[08%] add_interest_assert_rte_signed_overflow[K[09%] add_interest_loop_assign_part1[K[wp] [Alt-Ergo] Goal typed_add_interest_assert_rte_mem_access_2 : Unknown (Qed:28ms) (2.1s)
+[10%] add_interest_loop_assign_part2[K[wp] [Alt-Ergo] Goal typed_add_interest_assert_rte_mem_access_3 : Unknown (Qed:35ms) (2.4s)
+[11%] add_interest_loop_assign_part3[K[wp] [Alt-Ergo] Goal typed_add_interest_assert_rte_mem_access_6 : Unknown (Qed:35ms) (2.5s)
+[12%] add_interest_loop_term_decrease[K[13%] add_interest_loop_term_positive[K[14%] assign_account_number_post[K[15%] assign_account_number_post_2[K[16%] assign_account_number_assert_rte_mem_access[K[wp] [Alt-Ergo] Goal typed_assign_account_number_assert_rte_mem_access : Unknown (Qed:6ms) (507ms)
+[17%] assign_account_number_assert_rte_mem_access_2[K[wp] [Alt-Ergo] Goal typed_add_interest_loop_assign_part2 : Unknown (Qed:48ms) (3s)
+[18%] assign_account_number_loop_inv_preserved[K[19%] assign_account_number_loop_inv_established[K[wp] [Alt-Ergo] Goal typed_add_interest_loop_assign_part3 : Unknown (Qed:51ms) (2.7s)
+[20%] assign_account_number_assert_rte_mem_access_3[K[wp] [Alt-Ergo] Goal typed_assign_account_number_assert_rte_mem_access_2 : Unknown (Qed:33ms) (695ms)
+[wp] [Alt-Ergo] Goal typed_add_interest_loop_assign_part1 : Unknown (Qed:47ms) (4.1s)
+[20%] assign_account_number_assert_rte_mem_access_4[K[21%] assign_account_number_assert_rte_mem_access_5[K[22%] assign_account_number_loop_assign_part1[K[23%] assign_account_number_loop_assign_part2[K[24%] assign_account_number_loop_assign_part3[K[25%] close_account_loop_inv_preserved[K[26%] close_account_loop_inv_established[K[wp] [Alt-Ergo] Goal typed_assign_account_number_assert_rte_mem_access_4 : Unknown (Qed:27ms) (395ms)
+[27%] close_account_assert_rte_mem_access[K[28%] close_account_assert_rte_mem_access_2[K[29%] close_account_assert_rte_mem_access_3[K[30%] close_account_assert_rte_mem_access_4[K[31%] close_account_assert_rte_mem_access_5[K[32%] close_account_assert_rte_mem_access_6[K[wp] [Alt-Ergo] Goal typed_close_account_loop_inv_established : Unknown (Qed:12ms) (422ms)
+[33%] close_account_assert_rte_mem_access_7[K[34%] close_account_assert_rte_signed_overflow[K[35%] close_account_assert_rte_signed_overflow_2[K[36%] close_account_assert_rte_mem_access_8[K[wp] [Alt-Ergo] Goal typed_assign_account_number_loop_assign_part3 : Unknown (Qed:23ms) (616ms)
+[wp] [Alt-Ergo] Goal typed_assign_account_number_loop_assign_part2 : Unknown (Qed:37ms) (611ms) (Degenerated, 2 warnings)
+[37%] close_account_assert_rte_signed_overflow_3[K[38%] close_account_loop_assign_part1[K[39%] close_account_loop_assign_part2[K[40%] close_account_call_remove_account_number_pre[K[40%] close_account_call_free_deallocation_pre_freeable[K[41%] deposit_post[K[42%] deposit_loop_inv_preserved[K[43%] deposit_loop_inv_established[K[44%] deposit_assert_rte_mem_access[K[45%] deposit_assert_rte_mem_access_2[K[46%] deposit_assert_rte_mem_access_3[K[47%] deposit_assert_rte_mem_access_4[K[wp] [Alt-Ergo] Goal typed_deposit_loop_inv_established : Unknown (Qed:18ms) (1.1s)
+[48%] deposit_assert_rte_mem_access_5[K[wp] [Alt-Ergo] Goal typed_deposit_assert_rte_mem_access : Unknown (Qed:34ms) (1.8s)
+[49%] deposit_assert_rte_mem_access_6[K[50%] deposit_assert_rte_mem_access_7[K[wp] [Alt-Ergo] Goal typed_deposit_assert_rte_mem_access_2 : Unknown (Qed:31ms) (2.3s)
+[51%] deposit_assert_rte_signed_overflow[K[52%] deposit_loop_assign_part1[K[wp] [Alt-Ergo] Goal typed_deposit_assert_rte_mem_access_4 : Unknown (Qed:52ms) (2.8s)
+[53%] deposit_loop_assign_part2[K[54%] expand_accounts_assert_rte_signed_overflow[K[wp] [Alt-Ergo] Goal typed_expand_accounts_assert_rte_signed_overflow : Unknown (Qed:5ms) (406ms)
+[55%] expand_accounts_assert_rte_signed_overflow_2[K[wp] [Alt-Ergo] Goal typed_deposit_assert_rte_mem_access_5 : Unknown (Qed:60ms) (3s)
+[56%] expand_accounts_assert_rte_signed_overflow_3[K[wp] [Alt-Ergo] Goal typed_expand_accounts_assert_rte_signed_overflow_2 : Unknown (Qed:5ms) (447ms)
+[57%] expand_accounts_assign_exit_part1[K[wp] [Alt-Ergo] Goal typed_expand_accounts_assert_rte_signed_overflow_3 : Unknown (Qed:5ms) (449ms)
+[58%] expand_accounts_assign_exit_part2[K[wp] [Alt-Ergo] Goal typed_expand_accounts_assign_exit_part1 : Unknown (Qed:17ms) (438ms)
+[59%] expand_accounts_assign_normal_part1[K[wp] [Alt-Ergo] Goal typed_expand_accounts_assign_exit_part2 : Unknown (Qed:15ms) (396ms) (Degenerated, 2 warnings)
+[60%] expand_accounts_assign_normal_part2[K[wp] [Alt-Ergo] Goal typed_expand_accounts_assign_normal_part1 : Unknown (Qed:15ms) (441ms)
+[60%] find_account_number_assert_rte_mem_access[K[wp] [Alt-Ergo] Goal typed_expand_accounts_assign_normal_part2 : Unknown (Qed:15ms) (439ms) (Degenerated, 2 warnings)
+[wp] [Alt-Ergo] Goal typed_deposit_loop_assign_part2 : Unknown (Qed:94ms) (3s)
+[61%] find_account_number_assert_rte_mem_access_2[K[62%] find_account_number_assert_rte_mem_access_3[K[63%] find_account_number_assert_rte_mem_access_4[K[wp] [Alt-Ergo] Goal typed_find_account_number_assert_rte_mem_access : Unknown (Qed:40ms) (392ms)
+[64%] find_account_number_assert_rte_signed_overflow[K[wp] [Alt-Ergo] Goal typed_deposit_loop_assign_part1 : Unknown (Qed:82ms) (4.1s)
+[65%] incr_numbers_assert_rte_mem_access[K[wp] [Alt-Ergo] Goal typed_find_account_number_assert_rte_mem_access_2 : Unknown (Qed:43ms) (588ms)
+[66%] incr_numbers_assert_rte_mem_access_2[K[67%] incr_numbers_assign[K[wp] [Alt-Ergo] Goal typed_find_account_number_assert_rte_mem_access_4 : Unknown (Qed:23ms) (1.2s)
+[68%] push_back_assert_rte_mem_access[K[wp] [Alt-Ergo] Goal typed_push_back_assert_rte_mem_access : Unknown (Qed:26ms) (658ms)
+[69%] push_back_assert_rte_mem_access_2[K[wp] [Alt-Ergo] Goal typed_push_back_assert_rte_mem_access_2 : Unknown (Qed:23ms) (561ms)
+[70%] push_back_assert_rte_signed_overflow[K[wp] [Alt-Ergo] Goal typed_push_back_assert_rte_signed_overflow : Unknown (Qed:24ms) (407ms)
+[71%] push_back_assert_rte_signed_overflow_2[K[72%] remove_account_number_assert_rte_mem_access[K[wp] [Alt-Ergo] Goal typed_remove_account_number_assert_rte_mem_access : Unknown (Qed:29ms) (558ms)
+[73%] remove_account_number_assert_rte_mem_access_2[K[wp] [Alt-Ergo] Goal typed_remove_account_number_assert_rte_mem_access_2 : Unknown (Qed:38ms) (759ms)
+[74%] remove_account_number_assert_rte_mem_access_3[K[wp] [Alt-Ergo] Goal typed_remove_account_number_assert_rte_mem_access_3 : Unknown (Qed:34ms) (962ms)
+[75%] remove_account_number_loop_assign_part1[K[76%] remove_account_number_loop_assign_part2[K[wp] [Alt-Ergo] Goal typed_incr_numbers_assert_rte_mem_access : Timeout (Qed:32ms) (10s)
+[77%] total_accounts_post[K[wp] [Alt-Ergo] Goal typed_remove_account_number_loop_assign_part2 : Unknown (Qed:43ms) (2.5s)
+[78%] total_accounts_assign[K[79%] total_balance_post[K[wp] [Alt-Ergo] Goal typed_incr_numbers_assert_rte_mem_access_2 : Timeout (Qed:31ms) (10s)
+[80%] total_balance_assign[K[80%] transfer_from_to_call_deposit_pre[K[wp] [Alt-Ergo] Goal typed_total_accounts_post : Unknown (Qed:4ms) (366ms)
+[wp] [Alt-Ergo] Goal typed_incr_numbers_assign : Timeout (Qed:12ms) (10s)
+[81%] transfer_from_to_call_deposit_pre_2[K[82%] transfer_from_to_call_deposit_pre_3[K[wp] [Alt-Ergo] Goal typed_transfer_from_to_call_deposit_pre : Unknown (Qed:22ms) (246ms)
+[wp] [Alt-Ergo] Goal typed_total_balance_post : Unknown (Qed:3ms) (430ms)
+[83%] transfer_from_to_call_deposit_pre_4[K[84%] transfer_from_to_call_deposit_pre_2_2[K[wp] [Alt-Ergo] Goal typed_transfer_from_to_call_deposit_pre_2 : Unknown (Qed:14ms) (240ms)
+[85%] transfer_from_to_call_deposit_pre_3_2[K[86%] withdrawal_loop_inv_preserved[K[wp] [Alt-Ergo] Goal typed_transfer_from_to_call_deposit_pre_3 : Unknown (Qed:11ms) (345ms)
+[87%] withdrawal_loop_inv_established[K[wp] [Alt-Ergo] Goal typed_transfer_from_to_call_deposit_pre_2_2 : Unknown (Qed:17ms) (627ms)
+[88%] withdrawal_assert_rte_mem_access[K[wp] [Alt-Ergo] Goal typed_withdrawal_loop_inv_established : Unknown (Qed:10ms) (204ms)
+[wp] [Alt-Ergo] Goal typed_transfer_from_to_call_deposit_pre_4 : Unknown (Qed:19ms) (678ms)
+[89%] withdrawal_assert_rte_mem_access_2[K[90%] withdrawal_assert_rte_mem_access_3[K[91%] withdrawal_assert_rte_mem_access_4[K[92%] withdrawal_assert_rte_mem_access_5[K[93%] withdrawal_assert_rte_mem_access_6[K[wp] [Alt-Ergo] Goal typed_withdrawal_assert_rte_mem_access : Unknown (Qed:16ms) (194ms)
+[94%] withdrawal_assert_rte_mem_access_7[K[wp] [Alt-Ergo] Goal typed_withdrawal_assert_rte_mem_access_2 : Unknown (Qed:20ms) (182ms)
+[95%] withd
