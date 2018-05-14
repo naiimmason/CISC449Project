@@ -2,15 +2,6 @@
 #include <stdlib.h>
 #include <assert.h>
 
-// A data structure to dynamically and in O(1) time manage unique 7 digit account numbers with efficient recovery from deleted accounts
-// Based on a linked list implementation
-struct AccountNumber {
-    long account_number;
-    int active;
-    struct AccountNumber* next_account_number;
-    struct AccountNumber* prev_account_number;
-};
-
 struct AccountRecord {
     char* name;
     double balance;
@@ -20,88 +11,43 @@ struct AccountRecord {
 // Set of global variables that make up the model of the BMS. Can be pseudo-encapsulated by a struct, but it would
 // require either creating a global struct, or passing the same struct pointer to every function, this is a simpler
 // solution, but understandably not best practice
-long record_space = 1;
+long record_space = 0;
 long records = 0;
 double account_balances = 0;
-struct AccountRecord **accounts;
-struct AccountNumber *root_account_number;
-struct AccountNumber *open_account_number;
-
-void start_system(){
-    accounts = malloc(sizeof(*accounts)*record_space);
-    root_account_number = malloc(sizeof(struct AccountNumber*));
-    root_account_number->account_number = 1000000;
-    root_account_number->active = 0;
-    root_account_number->prev_account_number = NULL;
-    root_account_number->next_account_number = NULL;
-    open_account_number = root_account_number;
-}
-
-// Engine for the AccountNumber struct which manages the creation, deletion, and assignment of unique
-// account numbers used to access each account owner's account information
-long assign_account_number(){
-    long account_number = open_account_number->account_number;
-    struct AccountNumber *current = open_account_number;
-    current->active = 1;
-    
-    while(current != NULL){
-        if(current->active == 0){
-            open_account_number = current;
-        }else if(current->next_account_number == NULL){
-            struct AccountNumber* new_account_number = malloc(sizeof(*new_account_number));
-            new_account_number->account_number = current->account_number+1;
-            new_account_number->active = 0;
-            current->next_account_number = new_account_number;
-            new_account_number->prev_account_number = current;
-            new_account_number->next_account_number = NULL;
-            open_account_number = new_account_number;
-        }
-        current = current->next_account_number;
-    }
-    
-    return account_number;
-}
-
-// Inactivates an account number from a closed account, and waits to assign it to a newly opened account
-void remove_account_number(long _account_number){
-    struct AccountNumber* current = root_account_number;
-    
-    while(current != NULL){
-        if(current->account_number == _account_number){
-            current->active = 0;
-            open_account_number = current;
-            break;
-        }
-        current = current->next_account_number;
-    }
-}
+long open_account_number = 1000000;
+struct AccountRecord *accounts;
 
 void expand_accounts(){
     record_space = (record_space+1)*2;
     
-    struct AccountRecord **new_accounts = malloc(sizeof(*new_accounts)*record_space);
+    struct AccountRecord *account_array = malloc(sizeof(account_array)*record_space);
     
-    for(int i = 0; i < records; i++)
-        new_accounts[i] = accounts[i];
+    for(long i = 0; i < records; i++){
+        account_array[i] = accounts[i];
+    }
     
-    free(accounts);
+    for(long i = records; i < record_space; i++){
+        struct AccountRecord prim_account = {"", 0, 0};
+        account_array[i] = prim_account;
+    }
     
-    accounts = new_accounts;
+    if(accounts != NULL)
+        free(accounts);
+    
+    accounts = account_array;
 }
 
 void open_account(char* _name, double opening_balance){
-    struct AccountRecord* new_record = malloc(sizeof(*new_record));
-    new_record->name = _name;
-    new_record->balance = opening_balance;
-    new_record->account_number = assign_account_number();
-    
-    accounts[records] = new_record;
-    
-    records++;
-    account_balances+=opening_balance;
-    
     if(records == record_space)
         expand_accounts();
+    
+    accounts[records].name = _name;
+    accounts[records].balance = opening_balance;
+    accounts[records].account_number = open_account_number;
+
+    open_account_number++;
+    records++;
+    account_balances+=opening_balance;
 }
 
 void push_back(int i){
@@ -119,13 +65,10 @@ int close_account(long _account_number){
     int found = 0;
     
     for(i = 0; i < records; i++){
-        if(accounts[i]->account_number == _account_number){
-            account_balances-=accounts[i]->balance;
-            remove_account_number(accounts[i]->account_number);
-            free(accounts[i]);
+        if(accounts[i].account_number == _account_number){
+            account_balances-=accounts[i].balance;
             push_back(i+1);
             records--;
-            accounts[records] = NULL;
             found = 1;
             break;
         }
@@ -138,8 +81,8 @@ int close_account(long _account_number){
 // If the system doesn't contain a person with the specified name, it will return -1
 long find_account_number(char* _name){
     for(int i = 0; i < records; i++){
-        if(accounts[i]->name == _name)
-            return accounts[i]->account_number;
+        if(accounts[i].name == _name)
+            return accounts[i].account_number;
     }
     return -1;
 }
@@ -149,8 +92,8 @@ long find_account_number(char* _name){
 // deposited. Returns a 1 if the transaction was successful
 int deposit(char* _name, long _account_number, double deposit){
     for(int i = 0; i < records; i++){
-        if(accounts[i]->account_number == _account_number && accounts[i]->name == _name){
-            accounts[i]->balance+=deposit;
+        if(accounts[i].account_number == _account_number && accounts[i].name == _name){
+            accounts[i].balance+=deposit;
             account_balances+=deposit;
             return 1;
         }
@@ -164,8 +107,8 @@ int deposit(char* _name, long _account_number, double deposit){
 // otherwise it'll return 1 for a successful transaction
 int withdrawal(char* _name, long _account_number, double withdrawal){
     for(int i = 0; i < records; i++){
-        if(accounts[i]->account_number == _account_number && accounts[i]->name == _name && accounts[i]->balance > withdrawal){
-            accounts[i]->balance-=withdrawal;
+        if(accounts[i].account_number == _account_number && accounts[i].name == _name && accounts[i].balance > withdrawal){
+            accounts[i].balance-=withdrawal;
             account_balances-=withdrawal;
             return 1;
         }
@@ -191,35 +134,22 @@ int transfer_from_to(char* sender_name, long sender_account_number, char* receiv
 
 // Returns the global variable counting the total number of accounts or the size
 // of the linked list
-/*@ requires \true;
-  @ assigns \nothing;
-  @*/
 long total_accounts(){
     return records;
 }
 
 // Returns the global variable keeping track of the total balance of all the accounts
-/*@ requires \true;
-  @ assigns \nothing;
-  @*/
 double total_balance(){
     return account_balances;
 }
 
-//Given an interest rate and an amount of time, updates the account balance to reflect the new rate over time
-//Interest is calculated yearly (ie. 5% yearly for 1 year) 
-void add_interest(long _account_number, double interest, int time){
-  for(int i=0; i<records; i++){
-    if(accounts[i]->account_number == _account_number){
-      accounts[i]->balance = (accounts[i]->balance) * (1+interest*time);
-    }
-  }
+// Still working on this
+void add_interest(long _account_number, double interest, int time, int period){
+    
 }
 
 int main(int argc, const char * argv[]) {
-    start_system();
-    
-    open_account("Tom", 1000);
+    open_account("Tom", 1000.0);
     open_account("Tommy", 50);
     open_account("Tam", 826);
     open_account("Tammy", 3);
