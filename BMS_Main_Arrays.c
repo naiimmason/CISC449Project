@@ -5,6 +5,8 @@
 #include "Unchanged.h"
 #include "EqualRanges.h"
 
+// took -wp-rte out of makefile?? do we need
+
 struct AccountRecord {
     char* name;
     double balance;
@@ -137,6 +139,8 @@ int close_account(long _account_number){
   @ behavior account_number_not_found:
   @ assumes \forall integer k; 0<=k<=records ==> accounts[k].name != _name;
   @ ensures \result == -1;
+  @ complete behaviors;
+  @ disjoint behaviors;
   @*/
 long find_account_number(char* _name){
   /*@ loop invariant 0<=i<=records;
@@ -152,8 +156,21 @@ long find_account_number(char* _name){
 // Deposits the specified amount into correct account. Returns a 0 if the account
 // number doesn't exist or the information doesn't match so money isn't wrongfully
 // deposited. Returns a 1 if the transaction was successful
+/*@ requires \valid(_name);
+  @ requires _account_number > 0 && deposit > 0;
+  @ behavior error_condition:
+  @ assumes \forall integer k; 0<=k<=records ==> (accounts[k].account_number != _account_number || accounts[k].name != _name);
+  @ ensures \result == 0;
+  @ behavior successful:
+  @ assumes \forall integer k; 0<=k<=records && (accounts[k].account_number == _account_number && accounts[k].name ==  _name);
+  @ ensures \result == 1;
+  @ complete behaviors;
+  @ disjoint behaviors;
+  @*/
+//ensures \exists integer i; \pre(accounts[i].balance) < \Here(accounts[i].balance);
 int deposit(char* _name, long _account_number, double deposit){
   /*@ loop invariant 0<=i<=records;
+    @ loop invariant \forall integer j; 0<=j<i ==> accounts[j].account_number == _account_number || accounts[j].name == _name;
     @ loop variant records-i;
     @*/
     for(int i = 0; i < records; i++){
@@ -170,7 +187,20 @@ int deposit(char* _name, long _account_number, double deposit){
 // from the account's balance as well as the bank's total balance. If the account isn't found, the
 // account information doesn't match, or the withdraw will overdraft the account, it'll return a 0,
 // otherwise it'll return 1 for a successful transaction
+/*@ requires \valid(_name);
+  @ requires _account_number > 0 && withdrawal > 0;
+  @ behavior error_condition_withdrawal:
+  @ assumes \forall integer k; 0<=k<=records ==> (accounts[k].account_number != _account_number || accounts[k].name != _name || accounts[k].balance <= withdrawal);
+  @ ensures \result == 0;
+  @ behavior successful:
+  @ assumes \exists integer k; 0<=k<=records && (accounts[k].account_number == _account_number && accounts[k].name == _name && accounts[k].balance > withdrawal);
+  @ ensures \result == 1;
+  @*/
 int withdrawal(char* _name, long _account_number, double withdrawal){
+  /*@ loop invariant 0<=i<=records;
+    @ loop assigns i, accounts[i].balance, account_balances;
+    @ loop variant records-i;
+    @*/
     for(int i = 0; i < records; i++){
         if(accounts[i].account_number == _account_number && accounts[i].name == _name && accounts[i].balance > withdrawal){
             accounts[i].balance-=withdrawal;
@@ -184,6 +214,18 @@ int withdrawal(char* _name, long _account_number, double withdrawal){
 // Tries to withdraw the amount from the sender. If successful, it attempts to deposit it in the receiver account.
 // If this doesn't work, the money is deposited back into the sender's account. A 0 is returned if the withdraw
 // or the deposit fail for any of the reasons already mentioned above, otherwise it'll return a 1
+/*@ requires \valid(sender_name) && \valid(receiver_name);
+  @ requires sender_account_number > 0 && receiver_account_number > 0 && transfer_amount > 0;
+  @*/
+
+/* work in progress
+ * @ behavior withdrawal_fail:
+ * @ assumes 
+ * @ behavior deposit_fail:
+ * @ behavior withdrawal_success:
+ * @ behavior deposit_success:
+ * @ complete behaviors;
+ */
 int transfer_from_to(char* sender_name, long sender_account_number, char* receiver_name, long receiver_account_number, double transfer_amount){
     int withdraw_approved = withdrawal(sender_name, sender_account_number, transfer_amount);
     int deposit_approved = 0;
@@ -199,18 +241,36 @@ int transfer_from_to(char* sender_name, long sender_account_number, char* receiv
 
 // Returns the global variable counting the total number of accounts or the size
 // of the linked list
+/*@ requires \true;
+  @ ensures \result >= 0;
+  @*/
 long total_accounts(){
     return records;
 }
 
 // Returns the global variable keeping track of the total balance of all the accounts
+/*@ requires \true;
+  @ ensures \result >= 0;
+  @*/
 double total_balance(){
     return account_balances;
 }
 
-// Still working on this
-void add_interest(long _account_number, double interest, int time, int period){
-    
+//Given an interest rate and an amount of time, updates the account balance to reflect the new rate over time
+//Interest is calculated yearly (ie. 5% yearly for 1 year)
+/*@ requires 0<= interest <= 1;
+  @ requires 0<time;
+  @*/
+void add_interest(long _account_number, double interest, int time){
+	/*@ loop invariant 0<=i<=records;
+	  @ loop assigns accounts[i].balance;
+	  @ loop variant records-i;
+	  @*/
+	for(int i=0; i<records; i++){
+		if(accounts[i].account_number == _account_number){
+			accounts[i].balance = (accounts[i].balance) * (1+interest*time);
+		}
+	}
 }
 
 int main(int argc, const char * argv[]) {
