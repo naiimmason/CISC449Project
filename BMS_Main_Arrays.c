@@ -51,7 +51,7 @@ void expand_accounts(){
     }
     
     /*@ loop invariant records<=i<=record_space;
-      @ loop assigns i;
+      @ loop assigns i, account_array[i];
       @ loop variant record_space-i;
       @*/
     // loop invariant \forall integer k; records<=k<record_space ==> account_array[k]=={"", 0, 0};
@@ -68,6 +68,7 @@ void expand_accounts(){
 
 /*@ requires \valid(_name);
   @ requires opening_balance >= 0;
+  @ assigns accounts[records].name, accounts[records].balance, accounts[records].account_number, open_account_number, records, account_balances;
   @*/
 void open_account(char* _name, double opening_balance){
     if(records == record_space)
@@ -84,6 +85,7 @@ void open_account(char* _name, double opening_balance){
 
 /*@ requires i>0;
   @*/
+// add an ensures clause
 void push_back(int i){
   /*@ loop invariant i<=j<=records;
     @ loop assigns j;
@@ -98,13 +100,14 @@ void push_back(int i){
 // as subtracting the account balance out of the total bank balance. Time is a slower O(n)
 // due to the intital search for the correct account number. Pointer is also freed to prevent
 // memory leaks
+
 /*@ requires _account_number >= 0;
   @ behavior not_found:
-  @   assumes \forall integer j; 0<=j<=records ==> accounts[j].account_number != _account_number;
-  @   ensures \result == 0;
+  @ assumes \forall integer j; 0<=j<=records ==> accounts[j].account_number != _account_number;
+  @ ensures \result == 0;
   @ behavior found:
-  @   assumes \exists integer k; 0<=k<=records && accounts[k].account_number == _account_number;
-  @   ensures \result == 0;
+  @ assumes \exists integer k; 0<=k<=records && accounts[k].account_number == _account_number;
+  @ ensures \result == 1;
   @ complete behaviors;
   @ disjoint behaviors;
   @*/
@@ -115,7 +118,6 @@ int close_account(long _account_number){
     /*@ loop invariant 0<=i<=records;
       @ loop invariant not_equal: \forall integer j; 0<=j<i ==> accounts[j].account_number != _account_number;
       @ loop assigns i, found, records, account_balances;
-      @ loop variant records-i;
       @*/
     for(i = 0; i < records; i++){
         if(accounts[i].account_number == _account_number){
@@ -132,6 +134,7 @@ int close_account(long _account_number){
 
 // Finds the account number of the account owner with the specified name, case sensitive.
 // If the system doesn't contain a person with the specified name, it will return -1
+
 /*@ requires \valid(_name);
   @ behavior account_number_found:
   @ assumes \exists integer j; 0<=j<=records && accounts[j].name == _name;
@@ -145,7 +148,6 @@ int close_account(long _account_number){
 long find_account_number(char* _name){
   /*@ loop invariant 0<=i<=records;
     @ loop assigns i;
-    @ loop variant records-i;
     @*/
     for(int i = 0; i < records; i++){
         if(accounts[i].name == _name)
@@ -157,6 +159,7 @@ long find_account_number(char* _name){
 // Deposits the specified amount into correct account. Returns a 0 if the account
 // number doesn't exist or the information doesn't match so money isn't wrongfully
 // deposited. Returns a 1 if the transaction was successful
+
 /*@ requires \valid(_name);
   @ requires _account_number > 0 && deposit > 0;
   @ behavior error_condition:
@@ -173,7 +176,6 @@ int deposit(char* _name, long _account_number, double deposit){
   /*@ loop invariant 0<=i<=records;
     @ loop invariant \forall integer j; 0<=j<i ==> accounts[j].account_number == _account_number || accounts[j].name == _name;
     @ loop assigns i, accounts[i].balance, account_balances;
-    @ loop variant records-i;
     @*/
     for(int i = 0; i < records; i++){
         if(accounts[i].account_number == _account_number && accounts[i].name == _name){
@@ -189,6 +191,7 @@ int deposit(char* _name, long _account_number, double deposit){
 // from the account's balance as well as the bank's total balance. If the account isn't found, the
 // account information doesn't match, or the withdraw will overdraft the account, it'll return a 0,
 // otherwise it'll return 1 for a successful transaction
+
 /*@ requires \valid(_name);
   @ requires _account_number > 0 && withdrawal > 0;
   @ behavior error_condition_withdrawal:
@@ -201,7 +204,6 @@ int deposit(char* _name, long _account_number, double deposit){
 int withdrawal(char* _name, long _account_number, double withdrawal){
   /*@ loop invariant 0<=i<=records;
     @ loop assigns i, accounts[i].balance, account_balances;
-    @ loop variant records-i;
     @*/
     for(int i = 0; i < records; i++){
         if(accounts[i].account_number == _account_number && accounts[i].name == _name && accounts[i].balance > withdrawal){
@@ -216,6 +218,7 @@ int withdrawal(char* _name, long _account_number, double withdrawal){
 // Tries to withdraw the amount from the sender. If successful, it attempts to deposit it in the receiver account.
 // If this doesn't work, the money is deposited back into the sender's account. A 0 is returned if the withdraw
 // or the deposit fail for any of the reasons already mentioned above, otherwise it'll return a 1
+
 /*@ requires \valid(sender_name) && \valid(receiver_name);
   @ requires sender_account_number > 0 && receiver_account_number > 0 && transfer_amount > 0;
   @*/
@@ -243,6 +246,7 @@ int transfer_from_to(char* sender_name, long sender_account_number, char* receiv
 
 // Returns the global variable counting the total number of accounts or the size
 // of the linked list
+
 /*@ requires \true;
   @ ensures \result >= 0;
   @*/
@@ -251,6 +255,7 @@ long total_accounts(){
 }
 
 // Returns the global variable keeping track of the total balance of all the accounts
+
 /*@ requires \true;
   @ ensures \result >= 0;
   @*/
@@ -260,13 +265,17 @@ double total_balance(){
 
 //Given an interest rate and an amount of time, updates the account balance to reflect the new rate over time
 //Interest is calculated yearly (ie. 5% yearly for 1 year)
+
 /*@ requires 0<= interest <= 1;
   @ requires 0<time;
   @ behavior account_found:
   @ assumes \exists integer k; 0<=k<records && accounts[k].account_number == _account_number;
   @ ensures \exists integer k1; accounts[k1].balance == accounts[k1].balance * (1+interest*time);
   @ behavior account_not_found:
+  @ assumes \forall integer j; 0<=j<records ==> accounts[j].account_number != _account_number;
   @*/
+
+//ensures (Pre) accounts balance == (Here) accounts balance (not changed)
 void add_interest(long _account_number, double interest, int time){
 	/*@ loop invariant 0<=i<=records;
 	  @ loop invariant \forall integer j; 0<=j<i ==> accounts[j].account_number != _account_number;
