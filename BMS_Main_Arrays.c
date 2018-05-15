@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include "Unchanged.h"
+#include "EqualRanges.h"
+
 struct AccountRecord {
     char* name;
     double balance;
@@ -17,15 +20,39 @@ double account_balances = 0;
 long open_account_number = 1000000;
 struct AccountRecord *accounts;
 
+/*@ requires \true;
+  @ behavior accounts_null:
+  @ assumes accounts != NULL;
+  @ requires \valid(accounts);
+  @ behavior accounts_not_null:
+  @ assumes accounts == NULL;
+  @ requires \valid(accounts);
+  @ complete behaviors;
+  @ disjoint behaviors;
+  @*/
 void expand_accounts(){
     record_space = (record_space+1)*2;
     
     struct AccountRecord *account_array = malloc(sizeof(account_array)*record_space);
-    
-    for(long i = 0; i < records; i++){
+
+    /*@ loop invariant 0<=i<=records;
+      @ loop assigns i;
+      @ loop variant records-i;
+      @*/
+    //loop invariant equal: EqualRanges{Pre, Here}(account_array, i, accounts);
+    //loop invariant equal: EqualRanges{Pre, Here}(accounts, i, account_array);
+    //loop invariant unchanged: {Pre, Here}(account_array, i, n);
+    //loop invariant unchanged: {Pre, Here}(accounts, i, n);
+    //loop invariant \forall integer j; 0<=j<i ==> account_array[j] == accounts[j]
+    for(int i = 0; i < records; i++){
         account_array[i] = accounts[i];
     }
     
+    /*@ loop invariant records<=i<=record_space;
+      @ loop assigns i;
+      @ loop variant record_space-i;
+      @*/
+    // loop invariant \forall integer k; records<=k<record_space ==> account_array[k]=={"", 0, 0};
     for(long i = records; i < record_space; i++){
         struct AccountRecord prim_account = {"", 0, 0};
         account_array[i] = prim_account;
@@ -37,10 +64,13 @@ void expand_accounts(){
     accounts = account_array;
 }
 
+/*@ requires \valid(_name);
+  @ requires opening_balance >= 0;
+  @*/
 void open_account(char* _name, double opening_balance){
     if(records == record_space)
         expand_accounts();
-    
+
     accounts[records].name = _name;
     accounts[records].balance = opening_balance;
     accounts[records].account_number = open_account_number;
@@ -50,7 +80,13 @@ void open_account(char* _name, double opening_balance){
     account_balances+=opening_balance;
 }
 
+/*@ requires i>0;
+  @*/
 void push_back(int i){
+  /*@ loop invariant i<=j<=records;
+    @ loop assigns j;
+    @ loop variant records-j;
+    @*/
     for(int j = i; j < records; j++){
         accounts[j-1] = accounts[j];
     }
@@ -60,10 +96,25 @@ void push_back(int i){
 // as subtracting the account balance out of the total bank balance. Time is a slower O(n)
 // due to the intital search for the correct account number. Pointer is also freed to prevent
 // memory leaks
+/*@ requires _account_number >= 0;
+  @ behavior not_found:
+  @   assumes \forall integer j; 0<=j<=records ==> accounts[j].account_number != _account_number;
+  @   ensures \result == 0;
+  @ behavior found:
+  @   assumes \exists integer k; 0<=k<=records && accounts[k].account_number == _account_number;
+  @   ensures \result == 0;
+  @ complete behaviors;
+  @ disjoint behaviors;
+  @*/
 int close_account(long _account_number){
     int i;
     int found = 0;
-    
+
+    /*@ loop invariant 0<=i<=records;
+      @ loop invariant not_equal: \forall integer j; 0<=j<i ==> accounts[j].account_number != _account_number;
+      @ loop assigns i, found, records, account_balances;
+      @ loop variant records-i;
+      @*/
     for(i = 0; i < records; i++){
         if(accounts[i].account_number == _account_number){
             account_balances-=accounts[i].balance;
@@ -79,7 +130,18 @@ int close_account(long _account_number){
 
 // Finds the account number of the account owner with the specified name, case sensitive.
 // If the system doesn't contain a person with the specified name, it will return -1
+/*@ requires \valid(_name);
+  @ behavior account_number_found:
+  @ assumes \exists integer j; 0<=j<=records && accounts[j].name == _name;
+  @ ensures \result > -1;
+  @ behavior account_number_not_found:
+  @ assumes \forall integer k; 0<=k<=records ==> accounts[k].name != _name;
+  @ ensures \result == -1;
+  @*/
 long find_account_number(char* _name){
+  /*@ loop invariant 0<=i<=records;
+    @ loop variant records-i;
+    @*/
     for(int i = 0; i < records; i++){
         if(accounts[i].name == _name)
             return accounts[i].account_number;
@@ -91,6 +153,9 @@ long find_account_number(char* _name){
 // number doesn't exist or the information doesn't match so money isn't wrongfully
 // deposited. Returns a 1 if the transaction was successful
 int deposit(char* _name, long _account_number, double deposit){
+  /*@ loop invariant 0<=i<=records;
+    @ loop variant records-i;
+    @*/
     for(int i = 0; i < records; i++){
         if(accounts[i].account_number == _account_number && accounts[i].name == _name){
             accounts[i].balance+=deposit;

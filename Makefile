@@ -1,9 +1,9 @@
 
-INC = -I../Logic -I.
+INC = -I\Logic -I.
 FC = frama-c -wp -cpp-command 'gcc -C -E $(INC)' -cpp-frama-c-compliant \
      -wp-skip-fct main -wp-rte -kernel-msg-key pp
 CC = cc $(INC)
-NAME = BMS_Main_Arrays2
+NAME = BMS_Main_Arrays
 
 verify: $(NAME).c
 	$(FC) $(NAME).c
