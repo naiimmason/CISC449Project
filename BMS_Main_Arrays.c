@@ -144,6 +144,7 @@ int close_account(long _account_number){
   @*/
 long find_account_number(char* _name){
   /*@ loop invariant 0<=i<=records;
+    @ loop assigns i;
     @ loop variant records-i;
     @*/
     for(int i = 0; i < records; i++){
@@ -171,6 +172,7 @@ long find_account_number(char* _name){
 int deposit(char* _name, long _account_number, double deposit){
   /*@ loop invariant 0<=i<=records;
     @ loop invariant \forall integer j; 0<=j<i ==> accounts[j].account_number == _account_number || accounts[j].name == _name;
+    @ loop assigns i, accounts[i].balance, account_balances;
     @ loop variant records-i;
     @*/
     for(int i = 0; i < records; i++){
@@ -260,10 +262,15 @@ double total_balance(){
 //Interest is calculated yearly (ie. 5% yearly for 1 year)
 /*@ requires 0<= interest <= 1;
   @ requires 0<time;
+  @ behavior account_found:
+  @ assumes \exists integer k; 0<=k<records && accounts[k].account_number == _account_number;
+  @ ensures \exists integer k1; accounts[k1].balance == accounts[k1].balance * (1+interest*time);
+  @ behavior account_not_found:
   @*/
 void add_interest(long _account_number, double interest, int time){
 	/*@ loop invariant 0<=i<=records;
-	  @ loop assigns accounts[i].balance;
+	  @ loop invariant \forall integer j; 0<=j<i ==> accounts[j].account_number != _account_number;
+	  @ loop assigns i, accounts[i].balance;
 	  @ loop variant records-i;
 	  @*/
 	for(int i=0; i<records; i++){
