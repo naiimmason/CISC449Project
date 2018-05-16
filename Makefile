@@ -1,5 +1,6 @@
 
-INC = -I\Logic -I.
+INC = -I/Logic -I.
+
 FC = frama-c -wp -cpp-command 'gcc -C -E $(INC)' -cpp-frama-c-compliant \
      -wp-skip-fct main -kernel-msg-key pp
 CC = cc $(INC)
