@@ -2,10 +2,6 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "Unchanged.h"
-#include "EqualRanges.h"
-#include "typedefs.h"
-
 // took -wp-rte out of makefile?? do we need
 
 typedef struct _AccountRecord {
