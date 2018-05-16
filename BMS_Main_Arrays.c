@@ -4,14 +4,15 @@
 
 #include "Unchanged.h"
 #include "EqualRanges.h"
+#include "typedefs.h"
 
 // took -wp-rte out of makefile?? do we need
 
-struct AccountRecord {
+typedef struct _AccountRecord {
     char* name;
     double balance;
     long account_number;
-};
+} AccountRecord;
 
 // Set of global variables that make up the model of the BMS. Can be pseudo-encapsulated by a struct, but it would
 // require either creating a global struct, or passing the same struct pointer to every function, this is a simpler
@@ -20,7 +21,13 @@ long record_space = 0;
 long records = 0;
 double account_balances = 0;
 long open_account_number = 1000000;
-struct AccountRecord *accounts;
+AccountRecord *accounts;
+
+/*
+  predicate 
+    Unchanged_Balance{K,L}(AccountRecord* a, long m, long n) =
+      \forall AccountRecord i; m <= i < n ==> \at(i.balance,K) == \at(i.balance,L);
+*/
 
 /*@ requires \true;
   @ behavior accounts_null:
@@ -34,8 +41,9 @@ struct AccountRecord *accounts;
   @*/
 void expand_accounts(){
     record_space = (record_space+1)*2;
-    
-    struct AccountRecord *account_array = malloc(sizeof(account_array)*record_space);
+
+    AccountRecord *account_array;
+    //struct AccountRecord *account_array = malloc(sizeof(account_array)*record_space);
 
     /*@ loop invariant 0<=i<=records;
       @ loop assigns i;
@@ -56,7 +64,7 @@ void expand_accounts(){
       @*/
     // loop invariant \forall integer k; records<=k<record_space ==> account_array[k]=={"", 0, 0};
     for(long i = records; i < record_space; i++){
-        struct AccountRecord prim_account = {"", 0, 0};
+        AccountRecord prim_account = {"", 0, 0};
         account_array[i] = prim_account;
     }
     
@@ -84,6 +92,7 @@ void open_account(char* _name, double opening_balance){
 }
 
 /*@ requires i>0;
+  @ assigns \nothing;
   @*/
 // add an ensures clause
 void push_back(int i){
@@ -118,6 +127,7 @@ int close_account(long _account_number){
     /*@ loop invariant 0<=i<=records;
       @ loop invariant not_equal: \forall integer j; 0<=j<i ==> accounts[j].account_number != _account_number;
       @ loop assigns i, found, records, account_balances;
+      @ loop variant records-i;
       @*/
     for(i = 0; i < records; i++){
         if(accounts[i].account_number == _account_number){
@@ -148,6 +158,7 @@ int close_account(long _account_number){
 long find_account_number(char* _name){
   /*@ loop invariant 0<=i<=records;
     @ loop assigns i;
+    @ loop variant records-i;
     @*/
     for(int i = 0; i < records; i++){
         if(accounts[i].name == _name)
@@ -204,6 +215,7 @@ int deposit(char* _name, long _account_number, double deposit){
 int withdrawal(char* _name, long _account_number, double withdrawal){
   /*@ loop invariant 0<=i<=records;
     @ loop assigns i, accounts[i].balance, account_balances;
+    @ loop variant records-i;
     @*/
     for(int i = 0; i < records; i++){
         if(accounts[i].account_number == _account_number && accounts[i].name == _name && accounts[i].balance > withdrawal){
@@ -248,6 +260,7 @@ int transfer_from_to(char* sender_name, long sender_account_number, char* receiv
 // of the linked list
 
 /*@ requires \true;
+  @ assigns \nothing;
   @ ensures \result >= 0;
   @*/
 long total_accounts(){
@@ -257,6 +270,7 @@ long total_accounts(){
 // Returns the global variable keeping track of the total balance of all the accounts
 
 /*@ requires \true;
+  @ assigns \nothing;
   @ ensures \result >= 0;
   @*/
 double total_balance(){
@@ -288,6 +302,7 @@ void add_interest(long _account_number, double interest, int time){
 		}
 	}
 }
+//	  loop invariant interest_unchanged: Unchanged_Balance{Pre,Here}(accounts, 0, i)
 
 int main(int argc, const char * argv[]) {
     open_account("Tom", 1000.0);
