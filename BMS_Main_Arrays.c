@@ -19,29 +19,49 @@ double account_balances = 0;
 long open_account_number = 1000000;
 AccountRecord *accounts;
 
-/*
+/*@ 
   predicate 
-    Unchanged_Balance{K,L}(AccountRecord* a, long m, long n) =
-      \forall AccountRecord i; m <= i < n ==> \at(i.balance,K) == \at(i.balance,L);
+    Unchanged_Balance{K,L}(AccountRecord* a, integer m, integer n) =
+      \forall integer l; m <= l < n ==> \at(accounts[l].balance,K) == \at(accounts[l].balance,L);
+
+  predicate
+    Equal_Values{K}(AccountRecord* a, AccountRecord* b, integer m, integer n) =
+      \forall integer l; m <= l < n ==> \at(a[l],K) == \at(b[l],K);
+
+  predicate
+    Account_Exists(AccountRecord* a, integer m, integer n, long _account_number, char* _name) =
+      \exists integer k; m<=k<=n && (a[k].account_number == _account_number && a[k].name == _name);
+
+  predicate
+    Account_Exists(AccountRecord* a, integer m, integer n, long _account_number) =
+      \exists integer k; m<=k<=n && (a[k].account_number == _account_number);
+
+  predicate
+    Account_Does_Not_Exist(AccountRecord *a, integer m, integer n, long _account_number, char* _name) =
+      \forall integer k; m<=k<=n ==> (a[k].account_number != _account_number || a[k].name != _name);
+
+  predicate
+    Account_Does_Not_Exist(AccountRecord *a, integer m, integer n, long _account_number) =
+      \forall integer k; m<=k<=n ==> (a[k].account_number != _account_number);
 */
 
 /*@ requires \true;
   @ behavior accounts_null:
-  @ assumes accounts != NULL;
-  @ requires \valid(accounts);
+  @   assumes accounts != NULL;
+  @   requires \valid(accounts);
   @ behavior accounts_not_null:
-  @ assumes accounts == NULL;
-  @ requires \valid(accounts);
+  @   assumes accounts == NULL;
+  @   requires \valid(accounts);
   @ complete behaviors;
   @ disjoint behaviors;
   @*/
 void expand_accounts(){
-    record_space = (record_space+1)*2;
+  record_space = (record_space+1)*2;
 
-    AccountRecord *account_array;
-    //struct AccountRecord *account_array = malloc(sizeof(account_array)*record_space);
+    AccountRecord *account_array = malloc(sizeof(account_array)*record_space);
 
     /*@ loop invariant 0<=i<=records;
+      @ loop invariant equal_vals: Equal_Values{Here}(accounts, account_array, 0, i);
       @ loop assigns i;
       @ loop variant records-i;
       @*/
@@ -49,16 +69,17 @@ void expand_accounts(){
     //loop invariant equal: EqualRanges{Pre, Here}(accounts, i, account_array);
     //loop invariant unchanged: {Pre, Here}(account_array, i, n);
     //loop invariant unchanged: {Pre, Here}(accounts, i, n);
-    //loop invariant \forall integer j; 0<=j<i ==> account_array[j] == accounts[j]
     for(int i = 0; i < records; i++){
         account_array[i] = accounts[i];
     }
     
     /*@ loop invariant records<=i<=record_space;
+      @ loop invariant \forall integer k; records<=k<i ==> account_array[k].name == "";
+      @ loop invariant \forall integer k; records<=k<i ==> account_array[k].balance == 0;
+      @ loop invariant \forall integer k; records<=k<i ==> account_array[k].account_number == 0;
       @ loop assigns i, account_array[i];
       @ loop variant record_space-i;
       @*/
-    // loop invariant \forall integer k; records<=k<record_space ==> account_array[k]=={"", 0, 0};
     for(long i = records; i < record_space; i++){
         AccountRecord prim_account = {"", 0, 0};
         account_array[i] = prim_account;
@@ -68,11 +89,11 @@ void expand_accounts(){
         free(accounts);
     
     accounts = account_array;
+    //@ assert accounts == account_array;
 }
 
 /*@ requires \valid(_name);
   @ requires opening_balance >= 0;
-  @ assigns accounts[records].name, accounts[records].balance, accounts[records].account_number, open_account_number, records, account_balances;
   @*/
 void open_account(char* _name, double opening_balance){
     if(records == record_space)
@@ -90,7 +111,6 @@ void open_account(char* _name, double opening_balance){
 /*@ requires i>0;
   @ assigns \nothing;
   @*/
-// add an ensures clause
 void push_back(int i){
   /*@ loop invariant i<=j<=records;
     @ loop assigns j;
@@ -170,19 +190,19 @@ long find_account_number(char* _name){
 /*@ requires \valid(_name);
   @ requires _account_number > 0 && deposit > 0;
   @ behavior error_condition:
-  @ assumes \forall integer k; 0<=k<=records ==> (accounts[k].account_number != _account_number || accounts[k].name != _name);
-  @ ensures \result == 0;
+  @   assumes !Account_Exists(accounts, 0, records, _account_number, _name);
+  @   ensures \result == 0;
   @ behavior successful:
-  @ assumes \forall integer k; 0<=k<=records && (accounts[k].account_number == _account_number && accounts[k].name ==  _name);
-  @ ensures \result == 1;
+  @   assumes Account_Exists(accounts, 0, records, _account_number, _name);
+  @   ensures \result == 1;
   @ complete behaviors;
   @ disjoint behaviors;
   @*/
 //ensures \exists integer i; \pre(accounts[i].balance) < \Here(accounts[i].balance);
 int deposit(char* _name, long _account_number, double deposit){
   /*@ loop invariant 0<=i<=records;
-    @ loop invariant \forall integer j; 0<=j<i ==> accounts[j].account_number == _account_number || accounts[j].name == _name;
-    @ loop assigns i, accounts[i].balance, account_balances;
+    @ loop invariant \forall integer j; 0<=j<i ==> accounts[j].account_number != _account_number || accounts[j].name != _name;
+    @ loop assigns i, account_balances;
     @*/
     for(int i = 0; i < records; i++){
         if(accounts[i].account_number == _account_number && accounts[i].name == _name){
@@ -202,15 +222,15 @@ int deposit(char* _name, long _account_number, double deposit){
 /*@ requires \valid(_name);
   @ requires _account_number > 0 && withdrawal > 0;
   @ behavior error_condition_withdrawal:
-  @ assumes \forall integer k; 0<=k<=records ==> (accounts[k].account_number != _account_number || accounts[k].name != _name || accounts[k].balance <= withdrawal);
-  @ ensures \result == 0;
+  @   assumes Account_Does_Not_Exist(accounts, 0, records, _account_number, _name);
+  @   ensures \result == 0;
   @ behavior successful:
-  @ assumes \exists integer k; 0<=k<=records && (accounts[k].account_number == _account_number && accounts[k].name == _name && accounts[k].balance > withdrawal);
-  @ ensures \result == 1;
+  @   assumes Account_Exists(accounts, 0, records, _account_number, _name);
+  @   ensures \result == 1;
   @*/
 int withdrawal(char* _name, long _account_number, double withdrawal){
   /*@ loop invariant 0<=i<=records;
-    @ loop assigns i, accounts[i].balance, account_balances;
+    @ loop assigns i, account_balances;
     @ loop variant records-i;
     @*/
     for(int i = 0; i < records; i++){
@@ -227,10 +247,6 @@ int withdrawal(char* _name, long _account_number, double withdrawal){
 // If this doesn't work, the money is deposited back into the sender's account. A 0 is returned if the withdraw
 // or the deposit fail for any of the reasons already mentioned above, otherwise it'll return a 1
 
-/*@ requires \valid(sender_name) && \valid(receiver_name);
-  @ requires sender_account_number > 0 && receiver_account_number > 0 && transfer_amount > 0;
-  @*/
-
 /* work in progress
  * @ behavior withdrawal_fail:
  * @ assumes 
@@ -239,10 +255,13 @@ int withdrawal(char* _name, long _account_number, double withdrawal){
  * @ behavior deposit_success:
  * @ complete behaviors;
  */
+ /*@ requires \valid(sender_name) && \valid(receiver_name);
+  @ requires sender_account_number > 0 && receiver_account_number > 0 && transfer_amount > 0;
+  @*/
 int transfer_from_to(char* sender_name, long sender_account_number, char* receiver_name, long receiver_account_number, double transfer_amount){
     int withdraw_approved = withdrawal(sender_name, sender_account_number, transfer_amount);
     int deposit_approved = 0;
-    
+
     if(withdraw_approved == 1)
         deposit_approved = deposit(receiver_name, receiver_account_number, transfer_amount);
     
@@ -279,26 +298,26 @@ double total_balance(){
 /*@ requires 0<= interest <= 1;
   @ requires 0<time;
   @ behavior account_found:
-  @ assumes \exists integer k; 0<=k<records && accounts[k].account_number == _account_number;
-  @ ensures \exists integer k1; accounts[k1].balance == accounts[k1].balance * (1+interest*time);
+  @   assumes Account_Exists(accounts, 0, records, _account_number);
+  @   ensures \exists integer k1; accounts[k1].balance == accounts[k1].balance * (1+interest*time);
   @ behavior account_not_found:
-  @ assumes \forall integer j; 0<=j<records ==> accounts[j].account_number != _account_number;
+  @   assumes !Account_Exists(accounts, 0, records, _account_number);
+  @   ensures Unchanged_Balance{Pre, Here}(accounts, 0, records);
   @*/
-
-//ensures (Pre) accounts balance == (Here) accounts balance (not changed)
 void add_interest(long _account_number, double interest, int time){
 	/*@ loop invariant 0<=i<=records;
-	  @ loop invariant \forall integer j; 0<=j<i ==> accounts[j].account_number != _account_number;
-	  @ loop assigns i, accounts[i].balance;
+	  @ loop invariant !Account_Does_Not_Exist(accounts, 0, i, _account_number);
+	  @ loop invariant Unchanged_Balance{Pre,Here}(accounts, 0, i);
+	  @ loop assigns i;
 	  @ loop variant records-i;
 	  @*/
 	for(int i=0; i<records; i++){
 		if(accounts[i].account_number == _account_number){
 			accounts[i].balance = (accounts[i].balance) * (1+interest*time);
+			break;
 		}
 	}
 }
-//	  loop invariant interest_unchanged: Unchanged_Balance{Pre,Here}(accounts, 0, i)
 
 int main(int argc, const char * argv[]) {
     open_account("Tom", 1000.0);
