@@ -1,5 +1,0 @@
-Script started on Thu 17 May 2018 11:57:40 PM EDT
-]0;user@fc-light: ~/proj1/CISC449Projectuser@fc-light:~/proj1/CISC449Project$ exit
-exit
-
-Script done on Thu 17 May 2018 11:57:45 PM EDT
